@@ -3,7 +3,6 @@
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3EventNotificationRecord;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -13,9 +12,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 
-import java.util.Map; 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
@@ -29,61 +26,67 @@ import org.slf4j.LoggerFactory;
 /**
  * Handler 
  */
-<span class="nc" id="L32">public class App implements RequestHandler&lt;S3Event,String&gt;{</span>
-<span class="nc" id="L33">    Gson gson = new GsonBuilder().setPrettyPrinting().create();</span>
-<span class="nc" id="L34">    private static final Logger logger = LoggerFactory.getLogger(App.class);</span>
+
+<span class="nc" id="L30">public class App implements RequestHandler&lt;S3Event,String&gt;{</span>
+<span class="nc" id="L31">    Gson gson = new GsonBuilder().setPrettyPrinting().create();</span>
+<span class="nc" id="L32">    private static final Logger logger = LoggerFactory.getLogger(App.class);</span>
 
     public String handleRequest(S3Event event, Context context) {
+<span class="nc" id="L35">        logger.info(&quot;EVENT:&quot; + gson.toJson(event));</span>
 
-<span class="nc" id="L38">        logger.info(&quot;EVENT:&quot; + gson.toJson(event));</span>
+<span class="nc" id="L37">        S3EventNotificationRecord record = event.getRecords().get(0);</span>
+<span class="nc" id="L38">        String srcBucket = record.getS3().getBucket().getName();</span>
+<span class="nc" id="L39">        String srcKey = record.getS3().getObject().getUrlDecodedKey();</span>
+<span class="nc" id="L40">        ResponseInputStream&lt;GetObjectResponse&gt; file = getFileFromS3(srcBucket, srcKey); </span>
+<span class="nc" id="L41">        StringBuilder stringBuilder = transformFile(file); </span>
+<span class="nc" id="L42">        uploadFile(stringBuilder, srcBucket, srcKey);</span>
 
-<span class="nc" id="L40">        String response = &quot;200 OK&quot;; </span>
-<span class="nc" id="L41">        return response;</span>
+<span class="nc" id="L44">        String response = &quot;200 OK&quot;;</span>
+<span class="nc" id="L45">        return response;</span>
     }
 
     private ResponseInputStream&lt;GetObjectResponse&gt; getFileFromS3(String bucketName, String fileName) {
-<span class="nc" id="L45">        Region region = Region.EU_WEST_1;</span>
-<span class="nc" id="L46">        S3Client s3 = S3Client.builder()</span>
-<span class="nc" id="L47">                .region(region)</span>
-<span class="nc" id="L48">                .build();</span>
+<span class="nc" id="L49">        Region region = Region.EU_WEST_1;</span>
+<span class="nc" id="L50">        S3Client s3 = S3Client.builder()</span>
+<span class="nc" id="L51">                .region(region)</span>
+<span class="nc" id="L52">                .build();</span>
 
-<span class="nc" id="L50">        GetObjectRequest getObjectRequest = GetObjectRequest.builder()</span>
-<span class="nc" id="L51">                .bucket(bucketName)</span>
-<span class="nc" id="L52">                .key(fileName)</span>
-<span class="nc" id="L53">                .build();</span>
+<span class="nc" id="L54">        GetObjectRequest getObjectRequest = GetObjectRequest.builder()</span>
+<span class="nc" id="L55">                .bucket(bucketName)</span>
+<span class="nc" id="L56">                .key(fileName)</span>
+<span class="nc" id="L57">                .build();</span>
 
-<span class="nc" id="L55">        ResponseInputStream&lt;GetObjectResponse&gt; file = s3.getObject(getObjectRequest);</span>
-
-<span class="nc" id="L57">        return file;</span>
+<span class="nc" id="L59">        ResponseInputStream&lt;GetObjectResponse&gt; file = s3.getObject(getObjectRequest);</span>
+<span class="nc" id="L60">        return file;</span>
     }
 
     private StringBuilder transformFile(ResponseInputStream&lt;GetObjectResponse&gt; file) {
-<span class="nc" id="L61">        BufferedReader bufferReader = new BufferedReader(</span>
+<span class="nc" id="L64">        BufferedReader bufferReader = new BufferedReader(</span>
                 new InputStreamReader(file, StandardCharsets.UTF_8));
 
-<span class="nc" id="L64">        StringBuilder stringBuilder = new StringBuilder();</span>
+<span class="nc" id="L67">        StringBuilder stringBuilder = new StringBuilder();</span>
 
-<span class="nc" id="L66">        bufferReader.lines()</span>
-<span class="nc" id="L67">                .collect(Collectors.toList())</span>
-<span class="nc" id="L68">                .stream()</span>
-<span class="nc" id="L69">                .forEach(line -&gt; stringBuilder.append(line.toUpperCase() + &quot;\n&quot;));</span>
+<span class="nc" id="L69">        bufferReader.lines()</span>
+<span class="nc" id="L70">                .collect(Collectors.toList())</span>
+<span class="nc" id="L71">                .stream()</span>
+<span class="nc" id="L72">                .forEach(line -&gt; stringBuilder.append(line.toUpperCase() + &quot;\n&quot;));</span>
 
-<span class="nc" id="L71">        return stringBuilder;</span>
+<span class="nc" id="L74">        return stringBuilder;</span>
     }
 
     private void uploadFile(StringBuilder stringBuilder, String bucketName, String fileName ) {
-<span class="nc" id="L75">        Region region = Region.EU_WEST_1;</span>
-<span class="nc" id="L76">        S3Client s3 = S3Client.builder()</span>
-<span class="nc" id="L77">                .region(region)</span>
-<span class="nc" id="L78">                .build();</span>
+<span class="nc" id="L78">        Region region = Region.EU_WEST_1;</span>
+<span class="nc" id="L79">        S3Client s3 = S3Client.builder()</span>
+<span class="nc" id="L80">                .region(region)</span>
+<span class="nc" id="L81">                .build();</span>
 
-<span class="nc" id="L80">        PutObjectRequest objectRequest = PutObjectRequest.builder()</span>
-<span class="nc" id="L81">                .bucket(bucketName)</span>
-<span class="nc" id="L82">                .key(&quot;/transformed/&quot; + fileName)</span>
-<span class="nc" id="L83">                .build();</span>
+<span class="nc" id="L83">        PutObjectRequest objectRequest = PutObjectRequest.builder()</span>
+<span class="nc" id="L84">                .bucket(bucketName)</span>
+<span class="nc" id="L85">                .key(&quot;/transformed/&quot; + fileName)</span>
+<span class="nc" id="L86">                .build();</span>
 
-<span class="nc" id="L85">        RequestBody requestBody = RequestBody.fromString(stringBuilder.toString());</span>
-<span class="nc" id="L86">        s3.putObject(objectRequest, requestBody);</span>
-<span class="nc" id="L87">    }</span>
+<span class="nc" id="L88">        RequestBody requestBody = RequestBody.fromString(stringBuilder.toString());</span>
+<span class="nc" id="L89">        s3.putObject(objectRequest, requestBody);</span>
+<span class="nc" id="L90">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
