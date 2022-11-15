@@ -3,13 +3,20 @@
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import java.util.Map; 
+import java.io.IOException;
 /**
  * Handler 
  */
-<span class="nc" id="L9">public class App implements RequestHandler&lt;Map&lt;String,String&gt;,String&gt;{</span>
+<span class="nc" id="L10">public class App implements RequestHandler&lt;Map&lt;String,String&gt;,String&gt;{</span>
     public String handleRequest(Map&lt;String,String&gt; event, Context context) {
-<span class="nc" id="L11">        String response = &quot;200 OK&quot;;</span>
-<span class="nc" id="L12">        return response;</span>
+        try{ 
+<span class="nc" id="L13">            System.out.println(&quot;Hello from the Lamba function&quot;);</span>
+<span class="nc" id="L14">            System.out.println(event);</span>
+<span class="nc" id="L15">            String response = &quot;200 OK&quot;;</span>
+<span class="nc" id="L16">            return response;</span>
+<span class="nc" id="L17">        }catch(Exception e){</span>
+<span class="nc" id="L18">            return e.getMessage(); </span>
+        }
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

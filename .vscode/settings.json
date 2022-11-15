@@ -1,0 +1,22 @@
+{
+	"serverlessConsole.services": [
+		{
+			"type": "custom",
+			"title": "HelloJava",
+			"timeOffsetInMs": 0,
+			"awsProfile": "default",
+			"items": [
+				{
+					"title": "/aws/lambda/HelloJava",
+					"tabs": [
+						{
+							"region": "eu-west-1",
+							"title": "dev",
+							"logs": "/aws/lambda/HelloJava"
+						}
+					]
+				}
+			]
+		}
+	]
+}
