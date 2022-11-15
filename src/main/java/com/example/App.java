@@ -37,7 +37,7 @@ public class App implements RequestHandler<S3Event,String>{
         S3EventNotificationRecord record = event.getRecords().get(0);
         String srcBucket = record.getS3().getBucket().getName();
         String srcKey = record.getS3().getObject().getUrlDecodedKey();
-        if(!srcKey.endsWith("src.txt")) { 
+        if(!srcKey.endsWith(".txt")) { 
                 logger.info("File does not have a .txt suffix"); 
                 final String response = "200 Non-Text"; 
                 return response; 
