@@ -82,7 +82,7 @@ import org.slf4j.LoggerFactory;
 
 <span class="nc" id="L83">        PutObjectRequest objectRequest = PutObjectRequest.builder()</span>
 <span class="nc" id="L84">                .bucket(bucketName)</span>
-<span class="nc" id="L85">                .key(&quot;/transformed/&quot; + fileName)</span>
+<span class="nc" id="L85">                .key(fileName + &quot;_transformed&quot;)</span>
 <span class="nc" id="L86">                .build();</span>
 
 <span class="nc" id="L88">        RequestBody requestBody = RequestBody.fromString(stringBuilder.toString());</span>

@@ -37,6 +37,12 @@ public class App implements RequestHandler<S3Event,String>{
         S3EventNotificationRecord record = event.getRecords().get(0);
         String srcBucket = record.getS3().getBucket().getName();
         String srcKey = record.getS3().getObject().getUrlDecodedKey();
+        if(!srcKey.endsWith("src.txt")) { 
+                logger.info("This is not a .txt file");
+                String response = "200 OK"; 
+                return response; 
+        }
+
         ResponseInputStream<GetObjectResponse> file = getFileFromS3(srcBucket, srcKey); 
         StringBuilder stringBuilder = transformFile(file); 
         uploadFile(stringBuilder, srcBucket, srcKey);
@@ -82,7 +88,7 @@ public class App implements RequestHandler<S3Event,String>{
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key("/transformed/" + fileName)
+                .key(fileName + "_transformed")
                 .build();
 
         RequestBody requestBody = RequestBody.fromString(stringBuilder.toString());
