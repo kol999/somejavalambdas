@@ -38,8 +38,8 @@ public class App implements RequestHandler<S3Event,String>{
         String srcBucket = record.getS3().getBucket().getName();
         String srcKey = record.getS3().getObject().getUrlDecodedKey();
         if(!srcKey.endsWith("src.txt")) { 
-                logger.info("This is not a .txt file");
-                String response = "200 OK"; 
+                logger.info("File does not have a .txt suffix"); 
+                final String response = "200 Non-Text"; 
                 return response; 
         }
 

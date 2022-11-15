@@ -37,56 +37,62 @@ import org.slf4j.LoggerFactory;
 <span class="nc" id="L37">        S3EventNotificationRecord record = event.getRecords().get(0);</span>
 <span class="nc" id="L38">        String srcBucket = record.getS3().getBucket().getName();</span>
 <span class="nc" id="L39">        String srcKey = record.getS3().getObject().getUrlDecodedKey();</span>
-<span class="nc" id="L40">        ResponseInputStream&lt;GetObjectResponse&gt; file = getFileFromS3(srcBucket, srcKey); </span>
-<span class="nc" id="L41">        StringBuilder stringBuilder = transformFile(file); </span>
-<span class="nc" id="L42">        uploadFile(stringBuilder, srcBucket, srcKey);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if(!srcKey.endsWith(&quot;src.txt&quot;)) { </span>
+<span class="nc" id="L41">                logger.info(&quot;File does not have a .txt suffix&quot;); </span>
+<span class="nc" id="L42">                final String response = &quot;200 Non-Text&quot;; </span>
+<span class="nc" id="L43">                return response; </span>
+        }
 
-<span class="nc" id="L44">        String response = &quot;200 OK&quot;;</span>
-<span class="nc" id="L45">        return response;</span>
+<span class="nc" id="L46">        ResponseInputStream&lt;GetObjectResponse&gt; file = getFileFromS3(srcBucket, srcKey); </span>
+<span class="nc" id="L47">        StringBuilder stringBuilder = transformFile(file); </span>
+<span class="nc" id="L48">        uploadFile(stringBuilder, srcBucket, srcKey);</span>
+
+<span class="nc" id="L50">        String response = &quot;200 OK&quot;;</span>
+<span class="nc" id="L51">        return response;</span>
     }
 
     private ResponseInputStream&lt;GetObjectResponse&gt; getFileFromS3(String bucketName, String fileName) {
-<span class="nc" id="L49">        Region region = Region.EU_WEST_1;</span>
-<span class="nc" id="L50">        S3Client s3 = S3Client.builder()</span>
-<span class="nc" id="L51">                .region(region)</span>
-<span class="nc" id="L52">                .build();</span>
+<span class="nc" id="L55">        Region region = Region.EU_WEST_1;</span>
+<span class="nc" id="L56">        S3Client s3 = S3Client.builder()</span>
+<span class="nc" id="L57">                .region(region)</span>
+<span class="nc" id="L58">                .build();</span>
 
-<span class="nc" id="L54">        GetObjectRequest getObjectRequest = GetObjectRequest.builder()</span>
-<span class="nc" id="L55">                .bucket(bucketName)</span>
-<span class="nc" id="L56">                .key(fileName)</span>
-<span class="nc" id="L57">                .build();</span>
+<span class="nc" id="L60">        GetObjectRequest getObjectRequest = GetObjectRequest.builder()</span>
+<span class="nc" id="L61">                .bucket(bucketName)</span>
+<span class="nc" id="L62">                .key(fileName)</span>
+<span class="nc" id="L63">                .build();</span>
 
-<span class="nc" id="L59">        ResponseInputStream&lt;GetObjectResponse&gt; file = s3.getObject(getObjectRequest);</span>
-<span class="nc" id="L60">        return file;</span>
+<span class="nc" id="L65">        ResponseInputStream&lt;GetObjectResponse&gt; file = s3.getObject(getObjectRequest);</span>
+<span class="nc" id="L66">        return file;</span>
     }
 
     private StringBuilder transformFile(ResponseInputStream&lt;GetObjectResponse&gt; file) {
-<span class="nc" id="L64">        BufferedReader bufferReader = new BufferedReader(</span>
+<span class="nc" id="L70">        BufferedReader bufferReader = new BufferedReader(</span>
                 new InputStreamReader(file, StandardCharsets.UTF_8));
 
-<span class="nc" id="L67">        StringBuilder stringBuilder = new StringBuilder();</span>
+<span class="nc" id="L73">        StringBuilder stringBuilder = new StringBuilder();</span>
 
-<span class="nc" id="L69">        bufferReader.lines()</span>
-<span class="nc" id="L70">                .collect(Collectors.toList())</span>
-<span class="nc" id="L71">                .stream()</span>
-<span class="nc" id="L72">                .forEach(line -&gt; stringBuilder.append(line.toUpperCase() + &quot;\n&quot;));</span>
+<span class="nc" id="L75">        bufferReader.lines()</span>
+<span class="nc" id="L76">                .collect(Collectors.toList())</span>
+<span class="nc" id="L77">                .stream()</span>
+<span class="nc" id="L78">                .forEach(line -&gt; stringBuilder.append(line.toUpperCase() + &quot;\n&quot;));</span>
 
-<span class="nc" id="L74">        return stringBuilder;</span>
+<span class="nc" id="L80">        return stringBuilder;</span>
     }
 
     private void uploadFile(StringBuilder stringBuilder, String bucketName, String fileName ) {
-<span class="nc" id="L78">        Region region = Region.EU_WEST_1;</span>
-<span class="nc" id="L79">        S3Client s3 = S3Client.builder()</span>
-<span class="nc" id="L80">                .region(region)</span>
-<span class="nc" id="L81">                .build();</span>
+<span class="nc" id="L84">        Region region = Region.EU_WEST_1;</span>
+<span class="nc" id="L85">        S3Client s3 = S3Client.builder()</span>
+<span class="nc" id="L86">                .region(region)</span>
+<span class="nc" id="L87">                .build();</span>
 
-<span class="nc" id="L83">        PutObjectRequest objectRequest = PutObjectRequest.builder()</span>
-<span class="nc" id="L84">                .bucket(bucketName)</span>
-<span class="nc" id="L85">                .key(fileName + &quot;_transformed&quot;)</span>
-<span class="nc" id="L86">                .build();</span>
+<span class="nc" id="L89">        PutObjectRequest objectRequest = PutObjectRequest.builder()</span>
+<span class="nc" id="L90">                .bucket(bucketName)</span>
+<span class="nc" id="L91">                .key(fileName + &quot;_transformed&quot;)</span>
+<span class="nc" id="L92">                .build();</span>
 
-<span class="nc" id="L88">        RequestBody requestBody = RequestBody.fromString(stringBuilder.toString());</span>
-<span class="nc" id="L89">        s3.putObject(objectRequest, requestBody);</span>
-<span class="nc" id="L90">    }</span>
+<span class="nc" id="L94">        RequestBody requestBody = RequestBody.fromString(stringBuilder.toString());</span>
+<span class="nc" id="L95">        s3.putObject(objectRequest, requestBody);</span>
+<span class="nc" id="L96">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

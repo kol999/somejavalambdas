@@ -92,6 +92,14 @@
         <version>2.4.3</version>
         <configuration>
             <createDependencyReducedPom>false</createDependencyReducedPom>
+            <filters>
+              <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                      <exclude>**/Log4j2Plugins.dat</exclude>
+                  </excludes>
+              </filter>
+          </filters> 
         </configuration>
         <executions>
             <execution>
