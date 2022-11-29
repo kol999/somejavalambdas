@@ -4,7 +4,7 @@ To deploy the lambda functions run:
 
 mvn clean package
 
-aws lambda update-function-code --function-name HelloJava --zip-file file://demo-1.0-SNAPSHOT.jar 
+aws lambda update-function-code --function-name HelloJava --zip-file fileb://demo-1.0-SNAPSHOT.jar 
 
 Some various lambda functions for Java. By branch:
 
