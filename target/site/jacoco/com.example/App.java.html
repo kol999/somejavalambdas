@@ -3,19 +3,32 @@
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import java.util.Map; 
-import java.io.IOException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
- * Handler 
+ * Handler
+ * A very straightforward handler that accepts a Map and returns a String.
+ * 
  */
-<span class="nc" id="L10">public class App implements RequestHandler&lt;Map&lt;String,String&gt;,String&gt;{</span>
+<span class="nc" id="L19">public class App implements RequestHandler&lt;Map&lt;String,String&gt;,String&gt;{</span>
+
+<span class="nc" id="L21">    Gson gson = new GsonBuilder().setPrettyPrinting().create();</span>
+<span class="nc" id="L22">    private static final Logger logger = LoggerFactory.getLogger(App.class);</span>
+
     public String handleRequest(Map&lt;String,String&gt; event, Context context) {
+<span class="nc" id="L25">        logger.info(&quot;EVENT:&quot; + gson.toJson(event));</span>
         try{ 
-<span class="nc" id="L13">            System.out.println(&quot;Hello from the Lamba function&quot;);</span>
-<span class="nc" id="L14">            System.out.println(event);</span>
-<span class="nc" id="L15">            String response = &quot;200 OK&quot;;</span>
-<span class="nc" id="L16">            return response;</span>
-<span class="nc" id="L17">        }catch(Exception e){</span>
-<span class="nc" id="L18">            return e.getMessage(); </span>
+<span class="nc" id="L27">            System.out.println(&quot;Hello from the Lamba function&quot;);</span>
+<span class="nc" id="L28">            String response = &quot;200 OK&quot;;</span>
+<span class="nc" id="L29">            return response;</span>
+<span class="nc" id="L30">        }catch(Exception e){</span>
+<span class="nc" id="L31">            return e.getMessage(); </span>
         }
     }
 }
