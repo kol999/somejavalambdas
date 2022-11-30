@@ -1,23 +1,19 @@
 # somejavalambdas
 
-To deploy the lambda functions run:
+Various lambda functions .
 
-mvn clean package
+To build the package run:
 
-aws lambda update-function-code --function-name HelloJava --zip-file fileb://demo-1.0-SNAPSHOT.jar 
+`mvn clean package`
 
-Some various lambda functions for Java. By branch:
+To deploy the lambda function run:
 
-main branch: 
-	The main is a simple java handler that will return a pojo.   
+`aws lambda update-function-code --function-name HelloJava --zip-file fileb://demo-1.0-SNAPSHOT.jar`
 
-branch 
-git switch branch1 
+By branch:
 
-git switch branch2 
-
-
-
-
-
-
+- simple-pojo
+    A lambda function that accepts a pojo and returns a pojo
+    
+- main branch:
+    The main is a simple java handler that will accept a Map and return a string.
