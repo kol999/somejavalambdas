@@ -17,6 +17,7 @@ public class App implements RequestHandler<Map<String,String>, String>{
   public String handleRequest(Map<String,String> event, Context context)
   {
     LambdaLogger logger = context.getLogger();
+
     String response = "200 OK";
     // log execution details
     logger.log("ENVIRONMENT VARIABLES: " + gson.toJson(System.getenv()));
