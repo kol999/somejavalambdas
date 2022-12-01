@@ -13,12 +13,8 @@ public class App implements RequestHandler<Input,Output>{
 
   Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-  static {
-    System.out.println("Hello from the initializer");
-  }
-
   public App() {
-    System.out.println("Hello from the contructor");
+    System.out.println("App constructor");
   }
 
 
